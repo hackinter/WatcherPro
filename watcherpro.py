@@ -20,16 +20,16 @@ class WatcherPro:
         self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 12))
         self.domain_entry.pack(pady=5)
 
-        self.search_button = tk.Button(master, text="Search Now", command=self.start_search, bg="blue", fg="white")
+        self.search_button = tk.Button(master, text="Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
         self.search_button.pack(pady=10)
 
-        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, bg="red", fg="white")
+        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, bg="#FF5733", fg="white", borderwidth=0, relief="flat")
         self.exit_button.pack(pady=5)
 
         self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 10))
         self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.save_button = tk.Button(master, text="Save Now", command=self.open_save_dialog, bg="green", fg="white")
+        self.save_button = tk.Button(master, text="Save Now", command=self.open_save_dialog, bg="#2196F3", fg="white", borderwidth=0, relief="flat")
         self.save_button.pack(pady=10)
 
     def start_search(self):
@@ -93,6 +93,7 @@ class WatcherPro:
         
         self.result_text.delete(1.0, tk.END)  # Clear previous results
         self.result_text.insert(tk.END, ascii_art + "\n")  # Display ASCII art
+        self.result_text.insert(tk.END, "🌟 Results:\n\n")  # Add results header
         if self.valid_subdomains:
             for sub in self.valid_subdomains:
                 self.result_text.insert(tk.END, f"🌐 {sub}\n")
@@ -107,15 +108,15 @@ class WatcherPro:
         tk.Label(save_window, text="Choose file format:", font=("Helvetica", 12)).pack(pady=5)
         
         file_format_var = StringVar(value='txt')
-        tk.Radiobutton(save_window, text="Text (.txt)", variable=file_format_var, value='txt').pack(anchor='w')
-        tk.Radiobutton(save_window, text="PDF (.pdf)", variable=file_format_var, value='pdf').pack(anchor='w')
+        tk.Radiobutton(save_window, text="Text (.txt)", variable=file_format_var, value='txt', bg="white").pack(anchor='w')
+        tk.Radiobutton(save_window, text="PDF (.pdf)", variable=file_format_var, value='pdf', bg="white").pack(anchor='w')
 
         tk.Label(save_window, text="Enter filename:", font=("Helvetica", 12)).pack(pady=5)
         filename_entry = tk.Entry(save_window, width=30, font=("Helvetica", 12))
         filename_entry.pack(pady=5)
 
         # Save button to initiate the saving process
-        save_button = tk.Button(save_window, text="Save", command=lambda: self.save_results(filename_entry.get().strip(), file_format_var.get()), bg="green", fg="white")
+        save_button = tk.Button(save_window, text="Save", command=lambda: self.save_results(filename_entry.get().strip(), file_format_var.get()), bg="#FF9800", fg="white", borderwidth=0, relief="flat")
         save_button.pack(pady=10)
 
     def save_results(self, filename, file_format):
@@ -153,4 +154,10 @@ class WatcherPro:
 if __name__ == "__main__":
     root = tk.Tk()
     app = WatcherPro(root)
+
+    # Set button styles
+    for widget in root.winfo_children():
+        if isinstance(widget, tk.Button):
+            widget.config(borderwidth=5, relief="flat", highlightbackground="lightgray", highlightcolor="lightblue", bg="lightblue")
+
     root.mainloop()
