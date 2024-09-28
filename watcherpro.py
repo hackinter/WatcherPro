@@ -1,12 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, scrolledtext
 import dns.resolver
 from concurrent.futures import ThreadPoolExecutor
+import requests
 
 def get_subdomains(domain, wordlist):
-    messagebox.showinfo("Loading", "🔍 Searching for subdomains, please wait...")
+    loading_window = create_loading_window()
     subdomains = brute_force_subdomains(domain, wordlist)
     resolved_subdomains = resolve_subdomains(subdomains)
+    loading_window.destroy()
     return resolved_subdomains
 
 def brute_force_subdomains(domain, wordlist):
@@ -33,43 +35,50 @@ def resolve_subdomain(subdomain):
     try:
         result = dns.resolver.resolve(subdomain, 'A')
         return subdomain, [str(ip) for ip in result]
-    except Exception as e:
-        print(f"Error resolving {subdomain}: {e}")  # Debugging line
+    except Exception:
         return subdomain, None
 
 def save_results(domain, subdomains, file_type):
+    if not subdomains:
+        messagebox.showwarning("No Results", "🚫 No subdomains found.")
+        return
+
     file_name = f"{domain}.{file_type}"
-    if file_type == 'pdf':
-        from fpdf import FPDF
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
+    with open(file_name, "w") as file:
         for sub in subdomains:
-            pdf.cell(200, 10, sub, ln=True)
-        pdf.output(file_name)
-    else:
-        with open(file_name, "w") as file:
-            for sub in subdomains:
-                file.write(sub + "\n")
+            file.write(sub + "\n")
     messagebox.showinfo("Success", f"🎉 Results saved: {file_name}!")
+
+def display_results(subdomains):
+    result_window = tk.Toplevel(root)
+    result_window.title("Results")
+    result_window.geometry("400x300")
+    
+    text_area = scrolledtext.ScrolledText(result_window, wrap=tk.WORD)
+    text_area.pack(expand=True, fill='both')
+    
+    for sub in subdomains:
+        text_area.insert(tk.END, sub + "\n")
+    text_area.configure(state='disabled')  # Make the text area read-only
 
 def on_submit():
     domain = domain_entry.get()
     file_type = file_type_var.get()
-    
-    if file_type not in ['txt', 'pdf']:
-        messagebox.showerror("Error", "❌ Please select a valid file type (txt or pdf).")
-        return
 
     # Custom wordlist path
     wordlist = 'wordlist.txt'  # Specify your wordlist file name here
 
     subdomains = get_subdomains(domain, wordlist)
-    if not subdomains:
-        messagebox.showwarning("No Results", "🚫 No subdomains found.")
-        return
+    if subdomains:
+        display_results(subdomains)  # Show results in a new window
+        save_results(domain, subdomains, file_type)
 
-    save_results(domain, subdomains, file_type)
+def create_loading_window():
+    loading_window = tk.Toplevel(root)
+    loading_window.title("Loading")
+    loading_window.geometry("300x100")
+    tk.Label(loading_window, text="🔍 Searching for subdomains, please wait...", font=("Arial", 12)).pack(pady=20)
+    return loading_window
 
 # ASCII Art Header
 ascii_art = r"""
