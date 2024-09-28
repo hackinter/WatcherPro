@@ -2,13 +2,10 @@ import tkinter as tk
 from tkinter import messagebox, scrolledtext
 import dns.resolver
 from concurrent.futures import ThreadPoolExecutor
-import requests
 
 def get_subdomains(domain, wordlist):
-    loading_window = create_loading_window()
     subdomains = brute_force_subdomains(domain, wordlist)
     resolved_subdomains = resolve_subdomains(subdomains)
-    loading_window.destroy()
     return resolved_subdomains
 
 def brute_force_subdomains(domain, wordlist):
@@ -38,47 +35,25 @@ def resolve_subdomain(subdomain):
     except Exception:
         return subdomain, None
 
-def save_results(domain, subdomains, file_type):
-    if not subdomains:
-        messagebox.showwarning("No Results", "🚫 No subdomains found.")
-        return
-
-    file_name = f"{domain}.{file_type}"
-    with open(file_name, "w") as file:
-        for sub in subdomains:
-            file.write(sub + "\n")
-    messagebox.showinfo("Success", f"🎉 Results saved: {file_name}!")
-
 def display_results(subdomains):
-    result_window = tk.Toplevel(root)
-    result_window.title("Results")
-    result_window.geometry("400x300")
-    
-    text_area = scrolledtext.ScrolledText(result_window, wrap=tk.WORD)
-    text_area.pack(expand=True, fill='both')
-    
+    result_text.delete(1.0, tk.END)  # Clear previous results
+    if not subdomains:
+        result_text.insert(tk.END, "🚫 No subdomains found.\n")
+        return
     for sub in subdomains:
-        text_area.insert(tk.END, sub + "\n")
-    text_area.configure(state='disabled')  # Make the text area read-only
+        result_text.insert(tk.END, sub + "\n")
 
 def on_submit():
     domain = domain_entry.get()
-    file_type = file_type_var.get()
+    if not domain:  # Check if domain is empty
+        messagebox.showerror("Error", "❌ Please enter a valid domain name.")
+        return
 
     # Custom wordlist path
     wordlist = 'wordlist.txt'  # Specify your wordlist file name here
 
     subdomains = get_subdomains(domain, wordlist)
-    if subdomains:
-        display_results(subdomains)  # Show results in a new window
-        save_results(domain, subdomains, file_type)
-
-def create_loading_window():
-    loading_window = tk.Toplevel(root)
-    loading_window.title("Loading")
-    loading_window.geometry("300x100")
-    tk.Label(loading_window, text="🔍 Searching for subdomains, please wait...", font=("Arial", 12)).pack(pady=20)
-    return loading_window
+    display_results(subdomains)
 
 # ASCII Art Header
 ascii_art = r"""
@@ -93,7 +68,7 @@ ascii_art = r"""
 # Tkinter GUI
 root = tk.Tk()
 root.title("WatcherPro - Version 3.2.1")  # Updated version
-root.geometry("400x400")
+root.geometry("500x500")
 
 tk.Label(root, text=ascii_art, font=("Courier", 10), justify=tk.LEFT).pack(pady=10)
 tk.Label(root, text="👋 Welcome to WatcherPro!", font=("Arial", 16)).pack(pady=10)
@@ -102,11 +77,11 @@ tk.Label(root, text="Enter domain name (e.g., example.com):").pack(pady=5)
 domain_entry = tk.Entry(root, width=30)
 domain_entry.pack(pady=5)
 
-file_type_var = tk.StringVar(value='txt')
-tk.Radiobutton(root, text='TXT', variable=file_type_var, value='txt').pack(anchor=tk.W)
-tk.Radiobutton(root, text='PDF', variable=file_type_var, value='pdf').pack(anchor=tk.W)
-
 submit_btn = tk.Button(root, text="Search", command=on_submit)
 submit_btn.pack(pady=20)
+
+# Text area for displaying results
+result_text = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=15)
+result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
 root.mainloop()
