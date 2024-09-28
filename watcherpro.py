@@ -3,6 +3,7 @@ import os
 import tkinter as tk
 from tkinter import messagebox, simpledialog, scrolledtext
 import socket
+import threading
 
 class WatcherPro:
     def __init__(self, master):
@@ -10,27 +11,41 @@ class WatcherPro:
         self.master.title("WatcherPro - Version 3.2.1")
         self.subdomains = set()
         self.valid_subdomains = set()  # To store valid subdomains after DNS resolution
+        self.loading_label = None  # For loading animation
 
         # Create GUI components
-        self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):")
+        self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):", font=("Helvetica", 12))
         self.label.pack(pady=5)
 
-        self.domain_entry = tk.Entry(master, width=30)
+        self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 12))
         self.domain_entry.pack(pady=5)
 
-        self.search_button = tk.Button(master, text="Search Now", command=self.find_subdomains)
+        self.search_button = tk.Button(master, text="Search Now", command=self.start_search, bg="blue", fg="white")
         self.search_button.pack(pady=10)
 
-        self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15)
+        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, bg="red", fg="white")
+        self.exit_button.pack(pady=5)
+
+        self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 10))
         self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.save_button = tk.Button(master, text="Save Now", command=self.save_results)
+        self.save_button = tk.Button(master, text="Save Now", command=self.save_results, bg="green", fg="white")
         self.save_button.pack(pady=10)
+
+    def start_search(self):
+        # Start loading animation
+        self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 12))
+        self.loading_label.pack(pady=5)
+
+        # Start the search in a separate thread to prevent freezing
+        search_thread = threading.Thread(target=self.find_subdomains)
+        search_thread.start()
 
     def find_subdomains(self):
         domain = self.domain_entry.get().strip()
         if not domain:
             messagebox.showerror("Error", "🚨 Please enter a valid domain!")
+            self.loading_label.destroy()  # Remove loading label
             return
 
         url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
@@ -53,6 +68,8 @@ class WatcherPro:
             messagebox.showerror("Network Error", f"🚨 Network error: {e}")
         except Exception as e:
             messagebox.showerror("Error", f"🚨 Unknown error: {e}")
+        finally:
+            self.loading_label.destroy()  # Remove loading label
 
     def resolve_subdomains(self):
         for subdomain in self.subdomains:
