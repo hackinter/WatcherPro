@@ -31,6 +31,9 @@ class WatcherPro:
         self.stop_button = tk.Button(button_frame, text="⏹ Stop", command=self.stop_search, bg="#FF5722", fg="white", borderwidth=0, relief="flat")
         self.stop_button.pack(side=tk.LEFT, padx=5)
 
+        self.clear_button = tk.Button(button_frame, text="🧹 Clear", command=self.clear_results, bg="#FFC107", fg="white", borderwidth=0, relief="flat")
+        self.clear_button.pack(side=tk.LEFT, padx=5)
+
         self.exit_button = tk.Button(button_frame, text="❌ Exit", command=self.master.quit, bg="#F44336", fg="white", borderwidth=0, relief="flat")
         self.exit_button.pack(side=tk.LEFT, padx=5)
 
@@ -62,6 +65,15 @@ class WatcherPro:
             self.is_running = False
             messagebox.showinfo("Stopped", "⏹ The search has been stopped.")
             self.loading_label.destroy()  # Remove loading label
+
+    def clear_results(self):
+        self.subdomains.clear()  # Clear the subdomains set
+        self.valid_subdomains.clear()  # Clear the valid subdomains set
+        self.domain_entry.delete(0, tk.END)  # Clear the domain entry
+        self.result_text.delete(1.0, tk.END)  # Clear the result text area
+        if self.loading_label:  # Remove loading label if it exists
+            self.loading_label.destroy()
+        self.is_running = False  # Reset running state
 
     def find_subdomains(self):
         domain = self.domain_entry.get().strip()
