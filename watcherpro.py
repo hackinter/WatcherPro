@@ -1,7 +1,7 @@
 import requests
 import os
 import tkinter as tk
-from tkinter import messagebox, simpledialog, scrolledtext
+from tkinter import messagebox, simpledialog, scrolledtext, Toplevel, StringVar
 import socket
 import threading
 
@@ -29,7 +29,7 @@ class WatcherPro:
         self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 10))
         self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.save_button = tk.Button(master, text="Save Now", command=self.save_results, bg="green", fg="white")
+        self.save_button = tk.Button(master, text="Save Now", command=self.open_save_dialog, bg="green", fg="white")
         self.save_button.pack(pady=10)
 
     def start_search(self):
@@ -99,17 +99,26 @@ class WatcherPro:
         else:
             self.result_text.insert(tk.END, "🙅‍♂️ No valid subdomains found.")
 
-    def save_results(self):
-        if not self.valid_subdomains:
-            messagebox.showwarning("No Results", "🙅‍♂️ No subdomains to save!")
-            return
+    def open_save_dialog(self):
+        # Create a new window for saving options
+        save_window = Toplevel(self.master)
+        save_window.title("Save Options")
 
-        file_format = simpledialog.askstring("File Format", "Choose file format (txt/pdf):").strip().lower()
-        if file_format not in ['txt', 'pdf']:
-            messagebox.showerror("Error", "🚨 Invalid file format selected!")
-            return
+        tk.Label(save_window, text="Choose file format:", font=("Helvetica", 12)).pack(pady=5)
+        
+        file_format_var = StringVar(value='txt')
+        tk.Radiobutton(save_window, text="Text (.txt)", variable=file_format_var, value='txt').pack(anchor='w')
+        tk.Radiobutton(save_window, text="PDF (.pdf)", variable=file_format_var, value='pdf').pack(anchor='w')
 
-        filename = simpledialog.askstring("Save File", "Enter filename:")
+        tk.Label(save_window, text="Enter filename:", font=("Helvetica", 12)).pack(pady=5)
+        filename_entry = tk.Entry(save_window, width=30, font=("Helvetica", 12))
+        filename_entry.pack(pady=5)
+
+        # Save button to initiate the saving process
+        save_button = tk.Button(save_window, text="Save", command=lambda: self.save_results(filename_entry.get().strip(), file_format_var.get()), bg="green", fg="white")
+        save_button.pack(pady=10)
+
+    def save_results(self, filename, file_format):
         if not filename:
             messagebox.showerror("Error", "🚨 Please enter a filename!")
             return
@@ -118,6 +127,10 @@ class WatcherPro:
             filename += '.txt'
         elif file_format == 'pdf':
             filename += '.pdf'
+
+        # Create a loading label
+        loading_label = tk.Label(self.master, text="🔄 Saving...", font=("Helvetica", 12))
+        loading_label.pack(pady=5)
 
         try:
             if file_format == 'txt':
@@ -134,6 +147,8 @@ class WatcherPro:
             messagebox.showinfo("Success", f"✅ Results saved as: {filename}")
         except Exception as e:
             messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
+        finally:
+            loading_label.destroy()  # Remove loading label
 
 if __name__ == "__main__":
     root = tk.Tk()
