@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog, scrolledtext
 import socket
 import threading
-import json  # JSON লাইব্রেরি ইমপোর্ট করুন
 
 class WatcherPro:
     def __init__(self, master):
@@ -13,6 +12,7 @@ class WatcherPro:
         self.subdomains = set()
         self.valid_subdomains = set()  # To store valid subdomains after DNS resolution
         self.loading_label = None  # For loading animation
+        self.is_running = False  # Flag to control the running state
 
         # Create GUI components
         self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):", font=("Helvetica", 14))
@@ -21,32 +21,54 @@ class WatcherPro:
         self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 14), bd=2, relief="solid")
         self.domain_entry.pack(pady=10)
 
-        self.search_button = tk.Button(master, text="🔍 Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=0, relief="flat", padx=10, pady=5)
-        self.search_button.pack(pady=10, padx=20)
+        # Create buttons container
+        button_frame = tk.Frame(master)
+        button_frame.pack(pady=5)
 
-        self.exit_button = tk.Button(master, text="❌ Exit", command=self.master.quit, bg="#F44336", fg="white", borderwidth=0, relief="flat", padx=10, pady=5)
-        self.exit_button.pack(pady=5, padx=20)
+        self.search_button = tk.Button(button_frame, text="🔍 Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
+        self.search_button.pack(side=tk.LEFT, padx=5)
+
+        self.stop_button = tk.Button(button_frame, text="⏹ Stop", command=self.stop_search, bg="#FF9800", fg="white", borderwidth=0, relief="flat")
+        self.stop_button.pack(side=tk.LEFT, padx=5)
+
+        self.exit_button = tk.Button(button_frame, text="❌ Exit", command=self.master.quit, bg="#F44336", fg="white", borderwidth=0, relief="flat")
+        self.exit_button.pack(side=tk.LEFT, padx=5)
 
         self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 12), bd=2, relief="solid")
         self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.save_button = tk.Button(master, text="💾 Save Now", command=self.save_results, bg="#2196F3", fg="white", borderwidth=0, relief="flat", padx=10, pady=5)
-        self.save_button.pack(pady=10, padx=20)
+        self.save_button = tk.Button(master, text="💾 Save Now", command=self.save_results, bg="#2196F3", fg="white", borderwidth=0, relief="flat")
+        self.save_button.pack(pady=10)
 
     def start_search(self):
+        if self.is_running:
+            messagebox.showwarning("Warning", "🔄 A search is already in progress!")
+            return
+
         # Start loading animation
         self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 14))
         self.loading_label.pack(pady=5)
 
+        # Set running state to True
+        self.is_running = True
+
         # Start the search in a separate thread to prevent freezing
         search_thread = threading.Thread(target=self.find_subdomains)
         search_thread.start()
+
+    def stop_search(self):
+        # Stop the search if it is running
+        if self.is_running:
+            self.is_running = False
+            messagebox.showinfo("Stopped", "⏹ The search has been stopped.")
+            self.loading_label.destroy()  # Remove loading label
 
     def find_subdomains(self):
         domain = self.domain_entry.get().strip()
         if not domain:
             messagebox.showerror("Error", "🚨 Please enter a valid domain!")
             self.loading_label.destroy()  # Remove loading label
+            self.is_running = False  # Reset running state
             return
 
         url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
@@ -56,6 +78,8 @@ class WatcherPro:
             if response.status_code == 200:
                 data = response.text.splitlines()
                 for line in data:
+                    if not self.is_running:  # Check if search should stop
+                        break
                     parts = line.split(',')
                     subdomain = parts[0].strip()
                     if subdomain.endswith(domain):
@@ -71,9 +95,12 @@ class WatcherPro:
             messagebox.showerror("Error", f"🚨 Unknown error: {e}")
         finally:
             self.loading_label.destroy()  # Remove loading label
+            self.is_running = False  # Reset running state
 
     def resolve_subdomains(self):
         for subdomain in self.subdomains:
+            if not self.is_running:  # Check if search should stop
+                break
             try:
                 # Get the IP address of the subdomain
                 ip = socket.gethostbyname(subdomain)
@@ -135,6 +162,7 @@ class WatcherPro:
                         for sub in self.valid_subdomains:
                             file.write(sub + '\n')  # Each subdomain on a new line
                 elif file_format.get() == 'json':
+                    import json
                     with open(filename, 'w') as file:
                         json.dump(list(self.valid_subdomains), file)  # Save as JSON
 
@@ -143,7 +171,7 @@ class WatcherPro:
             except Exception as e:
                 messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
 
-        save_button = tk.Button(save_window, text="Save", command=save_file, bg="#4CAF50", fg="white", borderwidth=0, relief="flat", padx=10, pady=5)
+        save_button = tk.Button(save_window, text="Save", command=save_file, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
         save_button.pack(pady=10)
 
 if __name__ == "__main__":
