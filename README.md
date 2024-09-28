@@ -1,75 +1,109 @@
-```markdown
+---
+
 # WatcherPro - Subdomain Finder
 
-![version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)
-![status](https://img.shields.io/badge/status-active-success.svg)
-![license](https://img.shields.io/badge/license-MIT-blue.svg)
-
-WatcherPro is a powerful and user-friendly subdomain finder tool designed to help users discover and enumerate subdomains for any domain. It supports multiple features like brute-forcing, DNS resolution, and saving results in TXT or PDF formats. Built with simplicity in mind, the tool comes with a sleek GUI and is optimized for Gen-Z users.
+WatcherPro is a powerful and user-friendly subdomain finder tool, designed to help users discover active subdomains for a given domain using brute forcing, DNS resolution, and API integrations. It supports output formats such as TXT and PDF.
 
 ## Features
 
-- **Domain Input Option**: Easy-to-use domain entry interface.
-- **Brute Forcing**: Search for subdomains using custom wordlists.
-- **DNS Resolution**: Verify DNS records for the found subdomains.
-- **API Integration**: Collect subdomains using popular APIs like VirusTotal, Shodan, etc.
-- **Wordlist Support**: Load custom wordlists to expand subdomain search.
-- **Passive Scanning**: Discover subdomains from online databases without brute-forcing.
-- **Output Formatting**: Save results in TXT, PDF, CSV, or JSON formats.
-- **Multithreading Support**: Fast subdomain scanning using multi-threading.
-- **HTTPS Support**: Works with both HTTP and HTTPS protocols.
-- **Unresolved Subdomain Filtering**: Filter out subdomains that don’t resolve.
-
-## Getting Started
-
-### Installation
-
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/hackinter/WatcherPro.git
-    cd WatcherPro
-    ```
-
-2. Install the required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### Usage
-
-1. Run the tool:
-    ```bash
-    python watcherpro.py
-    ```
-
-2. Enter the domain name (e.g., `example.com`).
-3. Select the output format (`TXT` or `PDF`).
-4. Wait for the subdomains to be discovered and saved.
-
-### Screenshots
-
-#### GUI Interface:
-![GUI](https://example.com/screenshot.png)
-
-### Version History
-
-| Version | Description                                            | Release Date |
-|---------|--------------------------------------------------------|--------------|
-| ![v3.0.0](https://img.shields.io/badge/version-3.0.0-brightgreen.svg) | Added multithreading and passive scanning features  | September 2024 |
-| ![v2.5.0](https://img.shields.io/badge/version-2.5.0-yellow.svg) | Improved DNS resolution and output formatting       | August 2024    |
-| ![v2.0.0](https://img.shields.io/badge/version-2.0.0-orange.svg) | Added API integration for subdomain enumeration     | July 2024      |
-| ![v1.0.0](https://img.shields.io/badge/version-1.0.0-red.svg)    | Initial release with brute forcing and GUI interface| June 2024      |
-
-### License
-
-![license](https://img.shields.io/badge/license-MIT-blue.svg)  
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-### Contributions
-
-Feel free to open an issue or submit a pull request if you have any suggestions for improvements or features!
+1. **Domain Input Option**: Simple interface to enter the target domain.
+2. **Brute Forcing**: Uses a custom wordlist to find potential subdomains.
+3. **DNS Resolution**: Verifies DNS records of found subdomains.
+4. **API Integration**: Collect subdomains from popular APIs (e.g., VirusTotal, Shodan).
+5. **Wordlist Support**: Ability to use custom wordlists for subdomain discovery.
+6. **Passive Scanning**: Finds subdomains from online databases.
+7. **Output Formatting**: Export results in CSV, JSON, or TXT format.
+8. **Multi-threading**: Fast subdomain scanning with multi-thread support.
+9. **HTTPS Support**: Works for both HTTP and HTTPS protocols.
+10. **Subdomain Filtering**: Filter out unresolved or invalid subdomains.
 
 ---
 
-Happy hacking! 😊
+## Installation
+
+Follow these steps to install WatcherPro on your system:
+
+### Prerequisites
+
+1. **Python 3.x**: Ensure you have Python 3 installed on your machine.
+2. **pip**: Ensure `pip` is installed to manage Python packages.
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
 ```
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/hackinter/WatcherPro.git
+cd WatcherPro
+```
+
+### Setup Instructions
+
+If you are using a custom wordlist for brute-forcing subdomains, place the wordlist file in the project directory or specify the path in the code.
+
+---
+
+## Usage
+
+To run WatcherPro, follow these instructions:
+
+### GUI Mode (Recommended)
+
+1. Run the Python script:
+   ```bash
+   python watcherpro_gui.py
+   ```
+
+2. A graphical interface will appear. Input the target domain (e.g., `example.com`), choose your output file type (TXT or PDF), and press "Search."
+
+3. Once the subdomains are discovered, results will be saved in the selected file format (e.g., `example.txt` or `example.pdf`).
+
+### Command-Line Mode (Advanced Users)
+
+1. Open the terminal and navigate to the WatcherPro directory.
+
+2. Run the following command with the desired domain and wordlist (if needed):
+   ```bash
+   python watcherpro.py -d example.com -w wordlist.txt
+   ```
+
+3. The output will be displayed on the terminal and saved in the specified format.
+
+---
+
+## Version History
+
+- **v3.0.0**: Initial public release with GUI support and basic subdomain discovery features.
+- **v2.0.0**: Added multi-threading, custom wordlist support, and enhanced DNS resolution.
+- **v1.0.0**: Basic command-line subdomain finder with TXT output support.
+
+---
+
+## Policies & Warnings
+
+- **Legal Notice**: This tool is intended for educational purposes only. It should only be used to test your own domains or those for which you have explicit permission. Unauthorized use may violate legal and ethical guidelines.
+  
+- **Usage Policy**: WatcherPro comes with no warranty or liability for misuse. Ensure you comply with local laws when using this tool. The developers are not responsible for any consequences resulting from illegal use.
+  
+- **API Limitations**: Be aware that API services like VirusTotal and Shodan may have rate limits, and you might need API keys to access their services.
+  
+- **Ethical Usage**: Please ensure you have permission before scanning any domain. Unauthorized domain scanning may be considered illegal in many jurisdictions.
+
+---
+
+## Contributions
+
+If you would like to contribute to the WatcherPro project, feel free to submit issues or pull requests on our [GitHub repository](https://github.com/hackinter/WatcherPro).
+
+---
+
+## License
+
+This project is licensed under the **HACKINTER License 2024**. For more details, refer to the `LICENSE` file in the repository.
+
+---
+
