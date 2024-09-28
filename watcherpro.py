@@ -1,7 +1,7 @@
 import requests
 import os
 import tkinter as tk
-from tkinter import messagebox, simpledialog, scrolledtext, Toplevel, StringVar
+from tkinter import messagebox, simpledialog, scrolledtext
 import socket
 import threading
 
@@ -14,27 +14,27 @@ class WatcherPro:
         self.loading_label = None  # For loading animation
 
         # Create GUI components
-        self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):", font=("Helvetica", 12))
-        self.label.pack(pady=5)
+        self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):", font=("Helvetica", 14))
+        self.label.pack(pady=10)
 
-        self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 12))
-        self.domain_entry.pack(pady=5)
+        self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 14), bd=2, relief="solid")
+        self.domain_entry.pack(pady=10)
 
-        self.search_button = tk.Button(master, text="Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
-        self.search_button.pack(pady=10)
+        self.search_button = tk.Button(master, text="🔍 Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
+        self.search_button.pack(pady=10, padx=20)
 
-        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, bg="#FF5733", fg="white", borderwidth=0, relief="flat")
-        self.exit_button.pack(pady=5)
+        self.exit_button = tk.Button(master, text="❌ Exit", command=self.master.quit, bg="#F44336", fg="white", borderwidth=0, relief="flat")
+        self.exit_button.pack(pady=5, padx=20)
 
-        self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 10))
+        self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 12), bd=2, relief="solid")
         self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.save_button = tk.Button(master, text="Save Now", command=self.open_save_dialog, bg="#2196F3", fg="white", borderwidth=0, relief="flat")
-        self.save_button.pack(pady=10)
+        self.save_button = tk.Button(master, text="💾 Save Now", command=self.save_results, bg="#2196F3", fg="white", borderwidth=0, relief="flat")
+        self.save_button.pack(pady=10, padx=20)
 
     def start_search(self):
         # Start loading animation
-        self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 12))
+        self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 14))
         self.loading_label.pack(pady=5)
 
         # Start the search in a separate thread to prevent freezing
@@ -93,71 +93,62 @@ class WatcherPro:
         
         self.result_text.delete(1.0, tk.END)  # Clear previous results
         self.result_text.insert(tk.END, ascii_art + "\n")  # Display ASCII art
-        self.result_text.insert(tk.END, "🌟 Results:\n\n")  # Add results header
         if self.valid_subdomains:
             for sub in self.valid_subdomains:
                 self.result_text.insert(tk.END, f"🌐 {sub}\n")
         else:
             self.result_text.insert(tk.END, "🙅‍♂️ No valid subdomains found.")
 
-    def open_save_dialog(self):
-        # Create a new window for saving options
-        save_window = Toplevel(self.master)
-        save_window.title("Save Options")
-
-        tk.Label(save_window, text="Choose file format:", font=("Helvetica", 12)).pack(pady=5)
-        
-        file_format_var = StringVar(value='txt')
-        tk.Radiobutton(save_window, text="Text (.txt)", variable=file_format_var, value='txt', bg="white").pack(anchor='w')
-        tk.Radiobutton(save_window, text="PDF (.pdf)", variable=file_format_var, value='pdf', bg="white").pack(anchor='w')
-
-        tk.Label(save_window, text="Enter filename:", font=("Helvetica", 12)).pack(pady=5)
-        filename_entry = tk.Entry(save_window, width=30, font=("Helvetica", 12))
-        filename_entry.pack(pady=5)
-
-        # Save button to initiate the saving process
-        save_button = tk.Button(save_window, text="Save", command=lambda: self.save_results(filename_entry.get().strip(), file_format_var.get()), bg="#FF9800", fg="white", borderwidth=0, relief="flat")
-        save_button.pack(pady=10)
-
-    def save_results(self, filename, file_format):
-        if not filename:
-            messagebox.showerror("Error", "🚨 Please enter a filename!")
+    def save_results(self):
+        if not self.valid_subdomains:
+            messagebox.showwarning("No Results", "🙅‍♂️ No subdomains to save!")
             return
 
-        if file_format == 'txt':
-            filename += '.txt'
-        elif file_format == 'pdf':
-            filename += '.pdf'
+        save_window = tk.Toplevel(self.master)
+        save_window.title("Save Results")
 
-        # Create a loading label
-        loading_label = tk.Label(self.master, text="🔄 Saving...", font=("Helvetica", 12))
-        loading_label.pack(pady=5)
+        tk.Label(save_window, text="Choose file format (txt/pdf):", font=("Helvetica", 12)).pack(pady=5)
+        file_format = tk.StringVar(value='txt')
 
-        try:
-            if file_format == 'txt':
-                with open(filename, 'w') as file:
-                    for sub in self.valid_subdomains:
-                        file.write(sub + '\n')  # Each subdomain on a new line
-            elif file_format == 'pdf':
-                # PDF saving logic can be implemented using libraries like fpdf or reportlab
-                with open(filename, 'w') as file:
-                    file.write("This is a PDF file with valid subdomains:\n")
-                    for sub in self.valid_subdomains:
-                        file.write(sub + '\n')
+        tk.Radiobutton(save_window, text="Text File (.txt)", variable=file_format, value='txt').pack(anchor='w')
+        tk.Radiobutton(save_window, text="PDF File (.pdf)", variable=file_format, value='pdf').pack(anchor='w')
 
-            messagebox.showinfo("Success", f"✅ Results saved as: {filename}")
-        except Exception as e:
-            messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
-        finally:
-            loading_label.destroy()  # Remove loading label
+        tk.Label(save_window, text="Enter filename:", font=("Helvetica", 12)).pack(pady=5)
+        filename_entry = tk.Entry(save_window, width=30, font=("Helvetica", 12), bd=2, relief="solid")
+        filename_entry.pack(pady=5)
+
+        def save_file():
+            filename = filename_entry.get().strip()
+            if not filename:
+                messagebox.showerror("Error", "🚨 Please enter a filename!")
+                return
+
+            if file_format.get() == 'txt':
+                filename += '.txt'
+            elif file_format.get() == 'pdf':
+                filename += '.pdf'
+
+            try:
+                if file_format.get() == 'txt':
+                    with open(filename, 'w') as file:
+                        for sub in self.valid_subdomains:
+                            file.write(sub + '\n')  # Each subdomain on a new line
+                elif file_format.get() == 'pdf':
+                    # PDF saving logic can be implemented using libraries like fpdf or reportlab
+                    with open(filename, 'w') as file:
+                        file.write("This is a PDF file with valid subdomains:\n")
+                        for sub in self.valid_subdomains:
+                            file.write(sub + '\n')
+
+                messagebox.showinfo("Success", f"✅ Results saved as: {filename}")
+                save_window.destroy()  # Close the save window
+            except Exception as e:
+                messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
+
+        save_button = tk.Button(save_window, text="Save", command=save_file, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
+        save_button.pack(pady=10)
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = WatcherPro(root)
-
-    # Set button styles
-    for widget in root.winfo_children():
-        if isinstance(widget, tk.Button):
-            widget.config(borderwidth=5, relief="flat", highlightbackground="lightgray", highlightcolor="lightblue", bg="lightblue")
-
     root.mainloop()
