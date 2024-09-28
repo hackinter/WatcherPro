@@ -29,9 +29,6 @@ class WatcherPro:
         self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 12), bd=2, relief=tk.GROOVE)
         self.domain_entry.pack(pady=5)
 
-        # Loading label (initially hidden)
-        self.loading_label = tk.Label(master, text="🔄 Loading...", font=("Helvetica", 12))
-        
         self.search_button = tk.Button(master, text="Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=2, relief=tk.RAISED)
         self.search_button.pack(pady=10)
 
@@ -45,7 +42,8 @@ class WatcherPro:
         self.save_button.pack(pady=10)
 
     def start_search(self):
-        # Show loading animation
+        # Start loading animation
+        self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 12))
         self.loading_label.pack(pady=5)
 
         # Start the search in a separate thread to prevent freezing
@@ -56,7 +54,7 @@ class WatcherPro:
         domain = self.domain_entry.get().strip()
         if not domain:
             messagebox.showerror("Error", "🚨 Please enter a valid domain!")
-            self.loading_label.pack_forget()  # Remove loading label
+            self.loading_label.destroy()  # Remove loading label
             return
 
         url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
@@ -80,7 +78,7 @@ class WatcherPro:
         except Exception as e:
             messagebox.showerror("Error", f"🚨 Unknown error: {e}")
         finally:
-            self.loading_label.pack_forget()  # Remove loading label
+            self.loading_label.destroy()  # Remove loading label
 
     def resolve_subdomains(self):
         for subdomain in self.subdomains:
