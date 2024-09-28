@@ -25,22 +25,22 @@ class WatcherPro:
         button_frame = tk.Frame(master)
         button_frame.pack(pady=5)
 
-        self.search_button = tk.Button(button_frame, text="🔍 Search Now", command=self.start_search, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
+        self.search_button = tk.Button(button_frame, text="🔍 Search Now", command=self.start_search, bg="white", fg="black", borderwidth=0, relief="flat")
         self.search_button.pack(side=tk.LEFT, padx=5)
 
-        self.stop_button = tk.Button(button_frame, text="⏹ Stop", command=self.stop_search, bg="#FF5722", fg="white", borderwidth=0, relief="flat")
+        self.stop_button = tk.Button(button_frame, text="⏹ Stop", command=self.stop_search, bg="white", fg="black", borderwidth=0, relief="flat")
         self.stop_button.pack(side=tk.LEFT, padx=5)
 
-        self.clear_button = tk.Button(button_frame, text="🧹 Clear", command=self.clear_results, bg="#FFC107", fg="white", borderwidth=0, relief="flat")
+        self.clear_button = tk.Button(button_frame, text="🧹 Clear", command=self.clear_results, bg="white", fg="black", borderwidth=0, relief="flat")
         self.clear_button.pack(side=tk.LEFT, padx=5)
 
-        self.exit_button = tk.Button(button_frame, text="❌ Exit", command=self.master.quit, bg="#F44336", fg="white", borderwidth=0, relief="flat")
+        self.exit_button = tk.Button(button_frame, text="❌ Exit", command=self.master.quit, bg="white", fg="black", borderwidth=0, relief="flat")
         self.exit_button.pack(side=tk.LEFT, padx=5)
 
         self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 12), bd=2, relief="solid")
         self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.save_button = tk.Button(master, text="💾 Save Now", command=self.save_results, bg="#2196F3", fg="white", borderwidth=0, relief="flat")
+        self.save_button = tk.Button(master, text="💾 Save Now", command=self.save_results, bg="white", fg="black", borderwidth=0, relief="flat")
         self.save_button.pack(pady=10)
 
     def start_search(self):
@@ -183,7 +183,7 @@ class WatcherPro:
             except Exception as e:
                 messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
 
-        save_button = tk.Button(save_window, text="Save", command=save_file, bg="#4CAF50", fg="white", borderwidth=0, relief="flat")
+        save_button = tk.Button(save_window, text="Save", command=save_file, bg="white", fg="black", borderwidth=0, relief="flat")
         save_button.pack(pady=10)
 
 if __name__ == "__main__":
