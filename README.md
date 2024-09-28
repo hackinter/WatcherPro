@@ -55,7 +55,7 @@ To run WatcherPro, follow these instructions:
 
 1. Run the Python script:
    ```bash
-   python watcherpro_gui.py
+   python watcherpro.py
    ```
 
 2. A graphical interface will appear. Input the target domain (e.g., `example.com`), choose your output file type (TXT or PDF), and press "Search."
