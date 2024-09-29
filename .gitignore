@@ -3,48 +3,35 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.so
-*.egg
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 *.egg-info/
 dist/
 build/
 
-# Logs and database files
-*.log
-*.sqlite3
-
-# Virtual environment
-venv/
-env/
-ENV/
-.venv/
-.pytest_cache/
-*.env
-
-# MacOS specific
-.DS_Store
-
-# IDE specific
+# IDEs and Editors
 .vscode/
 .idea/
+*.sublime-project
+*.sublime-workspace
+*.iml
 
-# Byte-compiled / optimized / DLL files
-*.py[cod]
-*.pyo
-*.pyd
+# Jupyter Notebook
+.ipynb_checkpoints
 
-# Tkinter window settings (in case)
-*.tcl
+# Temporary files
+*.tmp
+*.log
+*.swp
+*~
+.DS_Store
+Thumbs.db
 
-# Ignore coverage reports
-htmlcov/
-.coverage
-.coverage.*
-.cache
-
-# WatcherPro specific output files
-*.txt
-*.json
-
-# Exclude any SVG files created dynamically
-*.svg
+# Environment variable files
+.env
