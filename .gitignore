@@ -1,0 +1,50 @@
+# Python specific
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Logs and database files
+*.log
+*.sqlite3
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.pytest_cache/
+*.env
+
+# MacOS specific
+.DS_Store
+
+# IDE specific
+.vscode/
+.idea/
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*.pyo
+*.pyd
+
+# Tkinter window settings (in case)
+*.tcl
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# WatcherPro specific output files
+*.txt
+*.json
+
+# Exclude any SVG files created dynamically
+*.svg
