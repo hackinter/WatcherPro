@@ -1,71 +1,63 @@
 ```markdown
-# WatcherPro - Version 3.2.1
+# 🌐 WatcherPro - Your Subdomain Discovery Companion 👀
 
-WatcherPro is a powerful and user-friendly tool designed for discovering subdomains of a given domain. Built with Python and a focus on simplicity, it aims to assist security enthusiasts, penetration testers, and developers in their subdomain enumeration tasks.
+WatcherPro is a cutting-edge subdomain discovery tool that empowers you to unveil hidden subdomains of any given domain. With an intuitive interface and advanced features, you can seamlessly explore subdomains, analyze results, and save your findings with just a few clicks! 💼✨
 
-## Installation 🛠️
+## 📋 Features
 
-To install WatcherPro, you need to have Python 3.x installed on your system. You can download Python from the official [Python website](https://www.python.org/downloads/).
+- **Easy Domain Input**: Enter your target domain effortlessly (e.g., `example.com`) 🔗
+- **Comprehensive Subdomain Discovery**: Leverage reliable APIs to uncover potential subdomains from various sources 🔍
+- **Real-Time Result Display**: View discovered subdomains in a user-friendly, scrollable text area 📜
+- **Save Your Results**: Conveniently save your subdomain findings as a text file for future reference 🗂️
+- **Quick Clear & Stop Options**: Clear results or halt ongoing searches whenever needed ✋
+- **Progress Indicators**: Stay informed with loading messages and result counts as you search ⏳
 
-### Step 1: Clone the Repository 📥
+## 🚀 Installation Guide
 
-Open your terminal and run the following command:
+Getting started with WatcherPro is a breeze! Follow these simple steps to set it up on your local machine:
 
-```bash
-git clone https://github.com/hackinter/WatcherPro.git
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/hackinter/WatcherPro.git
+   ```
+2. **Navigate to the Project Directory**:
+   ```bash
+   cd WatcherPro
+   ```
+3. **Install Required Libraries**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## 🛠️ How to Use
+
+Follow these steps to effectively use WatcherPro:
+
+1. **Launch the Application**:
+   ```bash
+   python watcherpro.py
+   ```
+2. **Input Domain**: Type in the domain you wish to investigate in the provided input field. 
+3. **Start Your Search**: Click on the "🔍 Search Now" button to initiate the search process.
+4. **Review Results**: Observe the discovered subdomains displayed in the text area.
+5. **Save Findings**: Click the "💾 Save Now" button to save your results as a text file.
+
+## 🤝 Contributing
+
+Contributions are highly welcomed! If you have suggestions, improvements, or new features in mind, feel free to open an issue or submit a pull request. Let's collaborate to make WatcherPro even better! 🛠️🌟
+
+## 📜 License
+
+This project is licensed under the MIT License. For more details, please refer to the [LICENSE](LICENSE) file.
+
+## 📅 Changelog
+
+For a comprehensive list of updates and changes, please visit the [CHANGELOG.md](CHANGELOG.md).
+
+---
+
+### 💬 Feedback
+
+We value your feedback! If you encounter any issues or have questions, please do not hesitate to reach out. Enjoy discovering subdomains with WatcherPro! 😊
 ```
-
-### Step 2: Navigate to the Project Directory 📂
-
-Change your directory to the cloned repository:
-
-```bash
-cd WatcherPro
-```
-
-### Step 3: Install Dependencies 📦
-
-To ensure all required libraries are installed, run:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Usage 🚀
-
-1. **Launch the Application**: Run the main script with the following command:
-
-    ```bash
-    python watcherpro.py
-    ```
-
-2. **Enter Your Domain**: Input your target domain in the designated entry field. 🌐
-
-3. **Start Searching**: Click the "Search Now" button to begin the subdomain enumeration process. 🔍
-
-4. **Stop or Clear Results**: Use the "Stop" button to halt the search ⏹️ or the "Clear" button to remove previous results and prepare for a new search. 🧹
-
-5. **Save Results**: After the search completes, you can save the found subdomains in your preferred format (TXT or JSON) by clicking the "Save Now" button. 💾
-
-## Policies and Usage Guidelines 📜
-
-- **Respect Privacy**: Always ensure that you have permission to scan the target domains. Unauthorized scanning can be illegal and unethical.
-- **Use Responsibly**: This tool is intended for educational and ethical hacking purposes. Misuse may result in consequences.
-- **Attribution**: If you use this tool in a project or research, please give appropriate credit.
-
-## Project History 📖
-
-WatcherPro was developed out of a need for a reliable and efficient tool for subdomain enumeration. The project began as a personal initiative to improve my skills in Python programming while addressing a common challenge faced by security professionals. Over time, I added features like DNS resolution, multi-threading for speed, and an intuitive graphical user interface (GUI) using Tkinter.
-
-The project has evolved with contributions and feedback from the community, and it aims to continue improving based on user needs and technological advancements.
-
-## Contact 📬
-
-For any questions, feedback, or collaboration inquiries, feel free to reach out:
-
-- **GitHub**: [hackinter](https://github.com/hackinter)
-- **Twitter**: [@_anonix_z](https://twitter.com/_anonix_z)
-- **Email**: [mail2hackinter@sendnow.win](mailto:mail2hackinter@sendnow.win)
-```
-Thank you for using WatcherPro! 🙌
 
