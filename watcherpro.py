@@ -1,18 +1,18 @@
 import requests
 import os
 import tkinter as tk
-from tkinter import messagebox, simpledialog, scrolledtext
+from tkinter import messagebox, scrolledtext, filedialog
 import socket
 import threading
 
 class WatcherPro:
     def __init__(self, master):
         self.master = master
-        self.master.title("WatcherPro - Version 3.2.1")
+        self.master.title("WatcherPro - Version 1.0.1")
         self.subdomains = set()
-        self.valid_subdomains = set()  # To store valid subdomains after DNS resolution
-        self.loading_label = None  # For loading animation
-        self.is_running = False  # Flag to control the running state
+        self.valid_subdomains = set()
+        self.loading_label = None
+        self.is_running = False
 
         # Create GUI components
         self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):", font=("Helvetica", 14))
@@ -21,7 +21,6 @@ class WatcherPro:
         self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 14), bd=2, relief="solid")
         self.domain_entry.pack(pady=10)
 
-        # Create buttons container
         button_frame = tk.Frame(master)
         button_frame.pack(pady=5)
 
@@ -48,39 +47,36 @@ class WatcherPro:
             messagebox.showwarning("Warning", "🔄 A search is already in progress!")
             return
 
-        # Start loading animation
         self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 14))
         self.loading_label.pack(pady=5)
 
-        # Set running state to True
         self.is_running = True
-
-        # Start the search in a separate thread to prevent freezing
         search_thread = threading.Thread(target=self.find_subdomains)
         search_thread.start()
 
     def stop_search(self):
-        # Stop the search if it is running
         if self.is_running:
             self.is_running = False
             messagebox.showinfo("Stopped", "⏹ The search has been stopped.")
-            self.loading_label.destroy()  # Remove loading label
+            if self.loading_label:
+                self.loading_label.destroy()
 
     def clear_results(self):
-        self.subdomains.clear()  # Clear the subdomains set
-        self.valid_subdomains.clear()  # Clear the valid subdomains set
-        self.domain_entry.delete(0, tk.END)  # Clear the domain entry
-        self.result_text.delete(1.0, tk.END)  # Clear the result text area
-        if self.loading_label:  # Remove loading label if it exists
+        self.subdomains.clear()
+        self.valid_subdomains.clear()
+        self.domain_entry.delete(0, tk.END)
+        self.result_text.delete(1.0, tk.END)
+        if self.loading_label:
             self.loading_label.destroy()
-        self.is_running = False  # Reset running state
+        self.is_running = False
 
     def find_subdomains(self):
         domain = self.domain_entry.get().strip()
         if not domain:
             messagebox.showerror("Error", "🚨 Please enter a valid domain!")
-            self.loading_label.destroy()  # Remove loading label
-            self.is_running = False  # Reset running state
+            if self.loading_label:
+                self.loading_label.destroy()
+            self.is_running = False
             return
 
         url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
@@ -90,50 +86,39 @@ class WatcherPro:
             if response.status_code == 200:
                 data = response.text.splitlines()
                 for line in data:
-                    if not self.is_running:  # Check if search should stop
+                    if not self.is_running:
                         break
                     parts = line.split(',')
                     subdomain = parts[0].strip()
                     if subdomain.endswith(domain):
                         self.subdomains.add(subdomain)
 
-                self.resolve_subdomains()  # Call to resolve subdomains
+                self.resolve_subdomains()
                 self.display_results()
             else:
                 messagebox.showerror("Error", f"😱 Error: {response.status_code}")
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Network Error", f"🚨 Network error: {e}")
-        except Exception as e:
-            messagebox.showerror("Error", f"🚨 Unknown error: {e}")
         finally:
-            self.loading_label.destroy()  # Remove loading label
-            self.is_running = False  # Reset running state
+            if self.loading_label:
+                self.loading_label.destroy()
+            self.is_running = False
 
     def resolve_subdomains(self):
         for subdomain in self.subdomains:
-            if not self.is_running:  # Check if search should stop
+            if not self.is_running:
                 break
             try:
-                # Get the IP address of the subdomain
                 ip = socket.gethostbyname(subdomain)
-                self.valid_subdomains.add(subdomain)  # Add valid subdomain to the set
+                self.valid_subdomains.add(subdomain)
             except socket.gaierror:
-                # If the DNS resolution fails, skip the subdomain
                 continue
 
     def display_results(self):
-        ascii_art = r"""
-
- __      __    _      _            ___         
- \ \    / /_ _| |_ __| |_  ___ _ _| _ \_ _ ___ 
-  \ \/\/ / _` |  _/ _| ' \/ -_) '_|  _/ '_/ _ \
-   \_/\_/\__,_|\__\__|_||_\___|_| |_| |_| \___/                                 
-
-        """
-        
-        self.result_text.delete(1.0, tk.END)  # Clear previous results
-        self.result_text.insert(tk.END, ascii_art + "\n")  # Display ASCII art
+        self.result_text.delete(1.0, tk.END)
+        self.result_text.insert(tk.END, "WatcherPro Results:\n\n")  # Added title here
         if self.valid_subdomains:
+            self.result_text.insert(tk.END, f"🔍 Found {len(self.valid_subdomains)} valid subdomains:\n\n")
             for sub in self.valid_subdomains:
                 self.result_text.insert(tk.END, f"🌐 {sub}\n")
         else:
@@ -144,47 +129,17 @@ class WatcherPro:
             messagebox.showwarning("No Results", "🙅‍♂️ No subdomains to save!")
             return
 
-        save_window = tk.Toplevel(self.master)
-        save_window.title("Save Results")
-
-        tk.Label(save_window, text="Choose file format (txt/json):", font=("Helvetica", 12)).pack(pady=5)
-        file_format = tk.StringVar(value='txt')
-
-        tk.Radiobutton(save_window, text="Text File (.txt)", variable=file_format, value='txt').pack(anchor='w')
-        tk.Radiobutton(save_window, text="JSON File (.json)", variable=file_format, value='json').pack(anchor='w')
-
-        tk.Label(save_window, text="Enter filename:", font=("Helvetica", 12)).pack(pady=5)
-        filename_entry = tk.Entry(save_window, width=30, font=("Helvetica", 12), bd=2, relief="solid")
-        filename_entry.pack(pady=5)
-
-        def save_file():
-            filename = filename_entry.get().strip()
-            if not filename:
-                messagebox.showerror("Error", "🚨 Please enter a filename!")
-                return
-
-            if file_format.get() == 'txt':
-                filename += '.txt'
-            elif file_format.get() == 'json':
-                filename += '.json'
-
+        filename = filedialog.asksaveasfilename(defaultextension=".txt", 
+                                                  filetypes=[("Text Files", "*.txt")])
+        if filename:
             try:
-                if file_format.get() == 'txt':
-                    with open(filename, 'w') as file:
-                        for sub in self.valid_subdomains:
-                            file.write(sub + '\n')  # Each subdomain on a new line
-                elif file_format.get() == 'json':
-                    import json
-                    with open(filename, 'w') as file:
-                        json.dump(list(self.valid_subdomains), file)  # Save as JSON
-
+                with open(filename, 'w') as file:
+                    for sub in self.valid_subdomains:
+                        file.write(f"{sub}\n")
+                
                 messagebox.showinfo("Success", f"✅ Results saved as: {filename}")
-                save_window.destroy()  # Close the save window
             except Exception as e:
                 messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
-
-        save_button = tk.Button(save_window, text="Save", command=save_file, bg="white", fg="black", borderwidth=0, relief="flat")
-        save_button.pack(pady=10)
 
 if __name__ == "__main__":
     root = tk.Tk()
