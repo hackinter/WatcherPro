@@ -66,6 +66,6 @@ For any questions, feedback, or collaboration inquiries, feel free to reach out:
 - **GitHub**: [hackinter](https://github.com/hackinter)
 - **Twitter**: [@_anonix_z](https://twitter.com/_anonix_z)
 - **Email**: [mail2hackinter@sendnow.win](mailto:mail2hackinter@sendnow.win)
-
-Thank you for using WatcherPro! 🙌
 ```
+Thank you for using WatcherPro! 🙌
+
