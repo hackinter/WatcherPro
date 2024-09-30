@@ -1,147 +1,166 @@
 import requests
 import os
-import tkinter as tk
-from tkinter import messagebox, scrolledtext, filedialog
-import socket
+from tkinter import *
+from tkinter import filedialog, messagebox
 import threading
+import time
 
-class WatcherPro:
+class SubChecker:
     def __init__(self, master):
         self.master = master
-        self.master.title("WatcherPro - Version 1.0.1")
+        self.master.title("WatcherPro")
+        self.master.geometry("600x500")
+        self.master.configure(bg="#f0f0f0")  # Light gray background
         self.subdomains = set()
-        self.valid_subdomains = set()
-        self.loading_label = None
-        self.is_running = False
+        self.version = "1.0.1"
 
-        # Create GUI components
-        self.label = tk.Label(master, text="🔗 Enter your domain (e.g., example.com):", font=("Helvetica", 14))
+        # Powered by HACKINTER credit label (top-right corner)
+        self.credit_label = Label(master, text="Powered by HACKINTER", font=("Helvetica", 10, "italic"), 
+                                  fg="gray", bg="#f0f0f0", anchor="e")
+        self.credit_label.pack(side=TOP, anchor=NE, padx=10, pady=5)  # Positioned at the top-right corner
+
+        # Label for domain input
+        self.label = Label(master, text="🔗 Enter target domain (e.g., example.com)", font=("Helvetica", 14, "bold"), bg="#f0f0f0")
         self.label.pack(pady=10)
 
-        self.domain_entry = tk.Entry(master, width=30, font=("Helvetica", 14), bd=2, relief="solid")
+        # Entry for domain input with rounded corners
+        self.domain_entry = Entry(master, width=40, font=("Helvetica", 12), bd=2, relief="groove")
         self.domain_entry.pack(pady=10)
 
-        button_frame = tk.Frame(master)
-        button_frame.pack(pady=5)
+        # Button frame for top and bottom rows
+        self.button_frame_top = Frame(master, bg="#f0f0f0")
+        self.button_frame_top.pack(pady=10)
+        
+        self.button_frame_bottom = Frame(master, bg="#f0f0f0")
+        self.button_frame_bottom.pack(pady=10)
 
-        self.search_button = tk.Button(button_frame, text="🔍 Search Now", command=self.start_search, bg="white", fg="black", borderwidth=0, relief="flat")
-        self.search_button.pack(side=tk.LEFT, padx=5)
+        # Style for buttons
+        button_style = {
+            "bg": "#007BFF",  # Blue background
+            "fg": "white",    # White text
+            "font": ("Helvetica", 10, "bold"),
+            "activebackground": "#0056b3",  # Darker blue on hover
+            "relief": "raised",
+            "borderwidth": 2,
+            "width": 12
+        }
 
-        self.stop_button = tk.Button(button_frame, text="⏹ Stop", command=self.stop_search, bg="white", fg="black", borderwidth=0, relief="flat")
-        self.stop_button.pack(side=tk.LEFT, padx=5)
+        # Top row buttons: Search, Copy, Save
+        self.search_button = Button(self.button_frame_top, text="🔍 Search", command=self.start_search, **button_style)
+        self.search_button.grid(row=0, column=0, padx=20)
 
-        self.clear_button = tk.Button(button_frame, text="🧹 Clear", command=self.clear_results, bg="white", fg="black", borderwidth=0, relief="flat")
-        self.clear_button.pack(side=tk.LEFT, padx=5)
+        self.copy_button = Button(self.button_frame_top, text="📋 Copy", command=self.copy_results, **button_style)
+        self.copy_button.grid(row=0, column=1, padx=20)
 
-        self.exit_button = tk.Button(button_frame, text="❌ Exit", command=self.master.quit, bg="white", fg="black", borderwidth=0, relief="flat")
-        self.exit_button.pack(side=tk.LEFT, padx=5)
+        self.save_button = Button(self.button_frame_top, text="💾 Save", command=self.save_results, **button_style)
+        self.save_button.grid(row=0, column=2, padx=20)
 
-        self.result_text = scrolledtext.ScrolledText(master, wrap=tk.WORD, height=15, font=("Helvetica", 12), bd=2, relief="solid")
-        self.result_text.pack(pady=10, fill=tk.BOTH, expand=True)
+        # Spacer row to create a gap between the two rows
+        self.button_frame_top.grid_rowconfigure(1, minsize=20)
 
-        self.save_button = tk.Button(master, text="💾 Save Now", command=self.save_results, bg="white", fg="black", borderwidth=0, relief="flat")
-        self.save_button.pack(pady=10)
+        # Bottom row buttons: Clear, Exit (Centered under top row)
+        self.clear_button = Button(self.button_frame_bottom, text="🧹 Clear", command=self.clear_input, **button_style)
+        self.clear_button.grid(row=2, column=0, padx=20, pady=5)
 
-    def start_search(self):
-        if self.is_running:
-            messagebox.showwarning("Warning", "🔄 A search is already in progress!")
-            return
+        self.exit_button = Button(self.button_frame_bottom, text="❌ Exit", command=self.master.quit, **button_style)
+        self.exit_button.grid(row=2, column=1, padx=20, pady=5)
 
-        self.loading_label = tk.Label(self.master, text="🔄 Loading...", font=("Helvetica", 14))
+        # Loading animation label with new color
+        self.loading_label = Label(master, text="", font=("Helvetica", 14, "bold"), fg="black", bg="#f0f0f0")  # Black color
         self.loading_label.pack(pady=5)
 
-        self.is_running = True
-        search_thread = threading.Thread(target=self.find_subdomains)
-        search_thread.start()
+        # Results count label with a new color and style
+        self.results_label = Label(master, text="", font=("Helvetica", 12, "bold"), fg="black", bg="#f0f0f0")  # Black color
+        self.results_label.pack(pady=5)
 
-    def stop_search(self):
-        if self.is_running:
-            self.is_running = False
-            messagebox.showinfo("Stopped", "⏹ The search has been stopped.")
-            if self.loading_label:
-                self.loading_label.destroy()
+        # Text box to display results
+        self.result_box = Text(master, height=15, width=70, font=("Helvetica", 12), bd=2, relief="groove", bg="#ffffff")
+        self.result_box.pack(pady=10)
 
-    def clear_results(self):
-        self.subdomains.clear()
-        self.valid_subdomains.clear()
-        self.domain_entry.delete(0, tk.END)
-        self.result_text.delete(1.0, tk.END)
-        if self.loading_label:
-            self.loading_label.destroy()
-        self.is_running = False
-
-    def find_subdomains(self):
+    def start_search(self):
+        self.result_box.delete(1.0, END)  # Clear text box
         domain = self.domain_entry.get().strip()
         if not domain:
-            messagebox.showerror("Error", "🚨 Please enter a valid domain!")
-            if self.loading_label:
-                self.loading_label.destroy()
-            self.is_running = False
+            messagebox.showwarning("Input Error", "Please enter a valid domain!")
             return
 
+        self.loading_label.config(text="Loading...")  # Show loading text
+        self.results_label.config(text="")  # Clear result count
+        self.subdomains.clear()  # Clear previous results
+        threading.Thread(target=self.find_subdomains, args=(domain,)).start()  # Start search in a new thread
+
+    def find_subdomains(self, domain):
         url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
+        loading_steps = 100  # Total loading steps
+        for i in range(loading_steps):
+            time.sleep(0.05)  # Simulate loading time
+            self.loading_label.config(text=f"Loading... {i + 1}/{loading_steps}")  # Update loading text
+
         try:
             response = requests.get(url)
-
             if response.status_code == 200:
                 data = response.text.splitlines()
                 for line in data:
-                    if not self.is_running:
-                        break
                     parts = line.split(',')
                     subdomain = parts[0].strip()
                     if subdomain.endswith(domain):
                         self.subdomains.add(subdomain)
 
-                self.resolve_subdomains()
                 self.display_results()
             else:
-                messagebox.showerror("Error", f"😱 Error: {response.status_code}")
+                messagebox.showerror("Error", f"Error: {response.status_code}")
         except requests.exceptions.RequestException as e:
-            messagebox.showerror("Network Error", f"🚨 Network error: {e}")
-        finally:
-            if self.loading_label:
-                self.loading_label.destroy()
-            self.is_running = False
-
-    def resolve_subdomains(self):
-        for subdomain in self.subdomains:
-            if not self.is_running:
-                break
-            try:
-                ip = socket.gethostbyname(subdomain)
-                self.valid_subdomains.add(subdomain)
-            except socket.gaierror:
-                continue
+            messagebox.showerror("Network Error", f"Error: {e}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Unknown error: {e}")
 
     def display_results(self):
-        self.result_text.delete(1.0, tk.END)
-        self.result_text.insert(tk.END, "WatcherPro Results:\n\n")  # Added title here
-        if self.valid_subdomains:
-            self.result_text.insert(tk.END, f"🔍 Found {len(self.valid_subdomains)} valid subdomains:\n\n")
-            for sub in self.valid_subdomains:
-                self.result_text.insert(tk.END, f"🌐 {sub}\n")
+        self.loading_label.config(text="")  # Clear loading label
+        self.results_label.config(text=f"Results found: {len(self.subdomains)}")  # Show result count
+        self.result_box.delete(1.0, END)  # Clear text box
+        if self.subdomains:
+            for sub in self.subdomains:
+                # Making results bold and larger
+                self.result_box.insert(END, f"🌐 {sub}\n", "bold")  # Insert subdomain with tag
         else:
-            self.result_text.insert(tk.END, "🙅‍♂️ No valid subdomains found.")
+            self.result_box.insert(END, "🙅‍♂️ No subdomains found.\n")
+
+        # Configure tag for bold text
+        self.result_box.tag_configure("bold", font=("Helvetica", 12, "bold"))  # Increased font size for bold
+
+    def copy_results(self):
+        self.master.clipboard_clear()
+        self.master.clipboard_append(self.result_box.get(1.0, END))
+        messagebox.showinfo("Copy Successful", "Results copied to clipboard!")
 
     def save_results(self):
-        if not self.valid_subdomains:
-            messagebox.showwarning("No Results", "🙅‍♂️ No subdomains to save!")
+        if not self.subdomains:
+            messagebox.showwarning("Save Error", "No subdomains to save!")
             return
 
-        filename = filedialog.asksaveasfilename(defaultextension=".txt", 
-                                                  filetypes=[("Text Files", "*.txt")])
-        if filename:
-            try:
-                with open(filename, 'w') as file:
-                    for sub in self.valid_subdomains:
-                        file.write(f"{sub}\n")
-                
-                messagebox.showinfo("Success", f"✅ Results saved as: {filename}")
-            except Exception as e:
-                messagebox.showerror("Error", f"🚨 Error while saving file: {e}")
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", 
+                                         filetypes=[("Text files", "*.txt"), 
+                                                    ("Config files", "*.conf")]))
+        if not file_path:
+            return  # User cancelled the save dialog
 
+        try:
+            with open(file_path, 'w') as file:
+                for sub in self.subdomains:
+                    file.write(sub + '\n')
+
+            messagebox.showinfo("Save Successful", f"Results saved to {file_path}")
+        except Exception as e:
+            messagebox.showerror("Save Error", f"Error while saving file: {e}")
+
+    def clear_input(self):
+        self.domain_entry.delete(0, END)
+        self.result_box.delete(1.0, END)
+        self.results_label.config(text="")
+        self.loading_label.config(text="")
+
+# Usage example
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = WatcherPro(root)
+    root = Tk()
+    app = SubChecker(root)
     root.mainloop()
