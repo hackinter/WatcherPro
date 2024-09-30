@@ -3,7 +3,7 @@
 ## [1.0.2] - 2024-10-01
 ### Added ✨
 - Subdomain count display feature after search.
-- HTML file format support for saving results. 📄
+- Config file format support for saving results. 📄
 
 ### Changed 🔄
 - Updated background watermark and improved GUI layout.
