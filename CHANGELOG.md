@@ -1,26 +1,23 @@
-# Change Log for WatcherPro
+# Changelog
 
-## [1.0.2] - 2024-09-30
-### Added 🆕
-- Implemented a new feature to display the number of valid subdomains found after a search. 📊
-- Added a background watermark of Kali Linux for aesthetic improvement. 💧
-- Integrated Pillow library for image handling. 🖼️
+## [1.0.2] - 2024-10-01
+### Added ✨
+- Subdomain count display feature after search.
+- HTML file format support for saving results. 📄
 
-### Changed ♻️
-- Updated the graphical user interface (GUI) to improve user experience. 🎨
-- Modified the result display section to include a summary of the number of valid subdomains found. ✏️
-- Improved loading message visibility during searches. 🔄
+### Changed 🔄
+- Updated background watermark and improved GUI layout.
+- Enhanced UI responsiveness. 💻
 
-### Fixed 🔧
-- Fixed minor UI bugs related to button responsiveness. 🖱️
-- Resolved issues with network error handling during API calls. 🚫
+### Fixed 🛠️
+- Addressed issues with network error handling and loading animations.
 
-## [1.0.1] - 2024-09-29
-### Added 🆕
-- Initial version of WatcherPro, a subdomain finder tool. 🚀
+## [1.0.1] - 2024-09-30
+### Added ✨
+- Basic functionality for domain subdomain searching. 🔍
 
-### Changed ♻️
-- None
+### Changed 🔄
+- Initial UI improvements and layout adjustments. 🎨
 
-### Fixed 🔧
-- None
+### Fixed 🛠️
+- Resolved minor bugs in subdomain fetching process.
