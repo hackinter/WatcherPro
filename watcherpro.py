@@ -12,7 +12,7 @@ class SubChecker:
         self.master.geometry("600x500")
         self.master.configure(bg="#f0f0f0")  # Light gray background
         self.subdomains = set()
-        self.version = "1.0.1"
+        self.version = "1.1.0"
 
         # Powered by HACKINTER credit label (top-right corner)
         self.credit_label = Label(master, text="Powered by HACKINTER", font=("Helvetica", 10, "italic"), 
