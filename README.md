@@ -5,8 +5,6 @@
 
 To install WatcherPro, follow these steps:
 
-![Installation Guide](An_illustrated_guide_on_how_to_install_WatcherPro_.png)
-
 1. **Clone the repository** using the command:
    ```bash
    git clone https://github.com/hackinter/WatcherPro.git
@@ -24,7 +22,7 @@ To install WatcherPro, follow these steps:
 
 4. **Run the application**:
    ```bash
-   python main.py
+   python watcherpro.py
    ```
 
 ## Guidelines 📜
