@@ -5,7 +5,7 @@ from tkinter import filedialog, messagebox
 import threading
 import time
 
-class SubChecker:
+class WatcherPro:
     def __init__(self, master):
         self.master = master
         self.master.title("WatcherPro")
