@@ -140,7 +140,7 @@ class WatcherPro:
 
         file_path = filedialog.asksaveasfilename(defaultextension=".txt", 
                                          filetypes=[("Text files", "*.txt"), 
-                                                    ("Config files", "*.conf")]))
+                                                
         if not file_path:
             return  # User cancelled the save dialog
 
