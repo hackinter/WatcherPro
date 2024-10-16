@@ -6,7 +6,7 @@
 To install WatcherPro, follow these steps:
 
 1. **Clone the repository** using the command:
-   ```bash
+   ```bash```
    git clone https://github.com/hackinter/WatcherPro.git
    ```
 
